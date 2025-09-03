@@ -27,7 +27,7 @@ public class UsuarioService {
     public Usuario salvar(Usuario usuario, List<String> grupos) {
         salvarUsuario(usuario);
         associarGruposAoUsuario(usuario, grupos);
-        return usuario;
+        return obterUsuarioComPermissoes(usuario.getLogin());
     }
 
     private void salvarUsuario(Usuario usuario) {
