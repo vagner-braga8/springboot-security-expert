@@ -49,4 +49,15 @@ public class UsuarioService {
                 .collect(Collectors.toList());
         usuarioGrupoRepository.saveAll(listaUsuarioGrupo);
     }
+
+    public Usuario obterUsuarioComPermissoes(String login) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByLogin(login);
+        if (usuarioOptional.isPresent()) {
+            return null;
+        }
+        Usuario usuario = usuarioOptional.get();
+        List<String> permissoes = usuarioGrupoRepository.findPermissoesByUsuario(usuario);
+        usuario.setPermissoes(permissoes);
+        return usuario;
+    }
 }

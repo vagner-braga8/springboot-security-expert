@@ -14,11 +14,11 @@ public class IdentificacaoUsuario {
     private String login;
     private List<String> permissoes;
 
-    public IdentificacaoUsuario(String nome, String login, List<String> permissoes, String id) {
+    public IdentificacaoUsuario(String id, String nome, String login, List<String> permissoes) {
+        this.id = id;
         this.nome = nome;
         this.login = login;
         this.permissoes = permissoes;
-        this.id = id;
     }
 
     public List<String> getPermissoes() {
