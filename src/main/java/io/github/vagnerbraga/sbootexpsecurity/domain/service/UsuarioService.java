@@ -7,6 +7,7 @@ import io.github.vagnerbraga.sbootexpsecurity.domain.repository.GrupoRepository;
 import io.github.vagnerbraga.sbootexpsecurity.domain.repository.UsuarioGrupoRepository;
 import io.github.vagnerbraga.sbootexpsecurity.domain.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,22 +21,32 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final GrupoRepository grupoRepository;
     private final UsuarioGrupoRepository usuarioGrupoRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Usuario salvar(Usuario usuario, List<String> grupos) {
-        usuarioRepository.save(usuario);
+        salvarUsuario(usuario);
+        associarGruposAoUsuario(usuario, grupos);
+        return usuario;
+    }
 
+    private void salvarUsuario(Usuario usuario) {
+        String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
+        usuario.setSenha(senhaCriptografada);
+        usuarioRepository.save(usuario);
+    }
+
+    private void associarGruposAoUsuario(Usuario usuario, List<String> grupos) {
         List<UsuarioGrupo> listaUsuarioGrupo = grupos.stream().map(nomeGrupo -> {
-            Optional<Grupo> possivelGrupo = grupoRepository.findByNome(nomeGrupo);
-            if (possivelGrupo.isPresent()) {
-                Grupo grupo = possivelGrupo.get();
-                return new UsuarioGrupo(usuario, grupo);
-            }
-            return null;
-        })
+                    Optional<Grupo> possivelGrupo = grupoRepository.findByNome(nomeGrupo);
+                    if (possivelGrupo.isPresent()) {
+                        Grupo grupo = possivelGrupo.get();
+                        return new UsuarioGrupo(usuario, grupo);
+                    }
+                    return null;
+                })
                 .filter(grupo -> grupo != null)
                 .collect(Collectors.toList());
         usuarioGrupoRepository.saveAll(listaUsuarioGrupo);
-        return usuario;
     }
 }
