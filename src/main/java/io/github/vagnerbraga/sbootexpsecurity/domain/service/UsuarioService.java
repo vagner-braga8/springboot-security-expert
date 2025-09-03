@@ -52,7 +52,7 @@ public class UsuarioService {
 
     public Usuario obterUsuarioComPermissoes(String login) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findByLogin(login);
-        if (usuarioOptional.isPresent()) {
+        if (usuarioOptional.isEmpty()) {
             return null;
         }
         Usuario usuario = usuarioOptional.get();
